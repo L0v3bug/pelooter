@@ -247,7 +247,7 @@ opt_get_integrity() {
 # --- Main functions ---
 download_scripts() {
     # wget
-    cmd_bin=$($CMD_TEST wget)
+    cmd_bin=$($CMD_TEST wget 2>/dev/null)
     if [ $? -eq 0 ]
     then
         log_debug "Wget will be used to download scripts"
@@ -307,7 +307,7 @@ download_scripts() {
     fi
 
     # curl
-    cmd_bin=$($CMD_TEST curl)
+    cmd_bin=$($CMD_TEST curl 2>/dev/null)
     if [ $? -eq 0 ]
     then
         log_debug "Curl will be used to download scripts"
@@ -378,7 +378,7 @@ download_scripts() {
     fi
 
     # Python
-    cmd_bin=$($CMD_TEST python)
+    cmd_bin=$($CMD_TEST python 2>/dev/null)
     if [ $? -eq 0 ]
     then
         echo $PY_DOWNLOADER > $TARGET_DOWNLOAD_PATH$PY_DOWNLOADER_NAME
@@ -437,7 +437,7 @@ download_scripts() {
     fi
 
     # Perl
-    cmd_bin=$($CMD_TEST perl)
+    cmd_bin=$($CMD_TEST perl 2>/dev/null)
     if [ $? -eq 0 ]
     then
         echo $PL_DOWNLOADER > $TARGET_DOWNLOAD_PATH$PL_DOWNLOADER_NAME
@@ -496,7 +496,7 @@ download_scripts() {
     fi
 
     # Bash
-    cmd_bin=$($CMD_TEST bash)
+    cmd_bin=$($CMD_TEST bash 2>/dev/null)
     if [ $? -eq 0 ]
     then
         echo $SH_DOWNLOADER > $TARGET_DOWNLOAD_PATH$SH_DOWNLOADER_NAME
@@ -573,7 +573,7 @@ integrity_checks() {
             continue
         fi
 
-        md5_cmd=$($CMD_TEST md5sum)
+        md5_cmd=$($CMD_TEST md5sum 2>/dev/null)
         if [ -z "$md5_cmd" ]
         then
             log_warning "Unable to test the integrity the md5sum command has not been found on this machine"
@@ -637,7 +637,7 @@ execute_scripts() {
 }
 
 upload_results() {
-    cmd_bin=$($CMD_TEST python)
+    cmd_bin=$($CMD_TEST python 2>/dev/null)
     if [ $? -eq 0 ]
     then
         python -m SimpleHTTPServer $TARGET_UPLOAD_PORT > /dev/null 2>&1 &
