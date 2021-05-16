@@ -43,9 +43,16 @@ FORCE_DOWNLOAD=1
 # 5-scriptargs     : The args used to run the scripts <arg1,arg2,arg3,...>
 # 6-integritycheck : The MD5Sum of the script in order to verify his integrity
 FILES_TO_DOWNLOAD=$(cat <<-END
-test/boby.pl;;;perl;;b54412f2bf05fa0bf3e0a92c13dea984
-script2.sh;;;bash;-c,boby,allen,-v,-e;39f9583ca14dbbecb9b90e192eeba25d
-toto.py;;;python;;ab4a85b4d4d47d63a8f49e1a3f668ca6
+LinEnum/LinEnum.sh;;;bash;;047221a55de17485c651c83c8a9db329
+unix-privesc-check/upc.sh;;;sh;;ddcfe959895ad6a1e8c3e9c31cee0702
+Bashark/bashark.sh;noexec;;;;dccf86ce980294721c0fffd9dd0c3850
+pspy/pspy32;noexec;;;;b3b3d7ea8ccf37813c67ae0c58ab0cff
+pspy/pspy64;noexec;;;;e04a36bb5444f2275990567614e1f509
+linuxprivchecker/linuxprivchecker.py;;;python;;1919961f57f12d2f2929988440f1faf1
+privilege-escalation-awesome-scripts-suite/linPEAS/linpeas.sh;;;sh;;bf2f7f4cdda40e2c9409f43da4f677f3
+linux-smart-enumeration/lse.sh;;;sh;;9c085090cdc827fc7425fc3e162b7a43
+linux-exploit-suggester/linux-exploit-suggester.sh;;;bash;;dbd2d65f18ce8e17d999eca65df899c7
+linux-exploit-suggester-2/linux-exploit-suggester-2.pl;;;perl;;56c5b3fa2d7a59d034a9096edc16d328
 END
 )
 
