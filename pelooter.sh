@@ -618,7 +618,7 @@ execute_scripts() {
 
         if [ "$noexec" = "noexec" ]
         then
-            log_info "noexec flag found for the script \`$script_name\`, it will not be executed"
+            log_debug "noexec flag found for the script \`$script_name\`, it will not be executed"
             continue
         fi
 
@@ -629,7 +629,7 @@ execute_scripts() {
         fi
         
         bin=$(get_absolute_bin_path $script_bin)
-        log_info "Execution of the script \`$file_to_exec\`"
+        log_debug "Execution of the script \`$file_to_exec\`"
         splitter $script_name
 
         if [ -z "$bin" ]
